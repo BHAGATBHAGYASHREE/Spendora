@@ -12,7 +12,8 @@ export default function Auth({ setToken }) {
     setError(null);
     try {
       const endpoint = isLogin ? '/api/auth/login' : '/api/auth/register';
-      const res = await fetch(`http://localhost:5005${endpoint}`, {
+      const apiUrl = `http://${window.location.hostname}:5005`;
+      const res = await fetch(`${apiUrl}${endpoint}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
@@ -25,7 +26,7 @@ export default function Auth({ setToken }) {
       setToken(data.token);
     } catch (err) {
       if (err.message.includes('Failed to fetch')) {
-         setError('Cannot connect to backend server on port 5005. Ensure it is running!');
+         setError(`Cannot connect to backend server on ${window.location.hostname}:5005.`);
       } else {
          setError(err.message);
       }

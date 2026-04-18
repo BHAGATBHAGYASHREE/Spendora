@@ -60,4 +60,4 @@ app.post('/api/auth/login', async (req, res) => {
   }
 });
 
-app.listen(5005, () => console.log('Auth backend listening actively on port 5005'));
+app.listen(5005, '0.0.0.0', () => console.log('Auth backend listening actively on port 5005 against 0.0.0.0'));
