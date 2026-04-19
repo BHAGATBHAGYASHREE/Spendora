@@ -485,7 +485,7 @@ export default function BusinessTracker() {
       </div>
 
       {/* Floating Action Buttons */}
-      <div style={{ position: 'fixed', bottom: '2.5rem', right: '2.5rem', display: 'flex', flexDirection: 'column', gap: '1rem', zIndex: 100 }}>
+      <div className="fab-container">
          {activeTab === 'customers' ? (
            <button className="fab" onClick={() => { setEditingId(null); setIsCustomerModalOpen(true); }} style={{ background: 'linear-gradient(135deg, var(--primary-color), #ff61d8)' }} title="Add New Customer">
               <PlusCircle size={24} />

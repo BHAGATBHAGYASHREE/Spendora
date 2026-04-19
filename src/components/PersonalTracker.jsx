@@ -215,14 +215,14 @@ export default function PersonalTracker() {
       </div>
 
       {/* Floating Action Buttons */}
-      <div style={{ position: 'fixed', bottom: '2.5rem', right: '2.5rem', display: 'flex', flexDirection: 'column', gap: '1rem', zIndex: 100 }}>
-         <button className="fab" onClick={() => setIsAddOpen(true)} style={{ position: 'relative', bottom: 0, right: 0 }} title="Add Income">
+      <div className="fab-container">
+         <button className="fab" onClick={() => setIsAddOpen(true)} title="Add Income">
             <PlusCircle size={24} />
          </button>
-         <button className="fab" onClick={() => setIsSaveOpen(true)} style={{ position: 'relative', bottom: 0, right: 0, background: 'linear-gradient(135deg, var(--accent-teal), #2dd4bf)', boxShadow: '0 10px 25px rgba(20, 184, 166, 0.4)' }} title="Add Savings">
+         <button className="fab" onClick={() => setIsSaveOpen(true)} style={{ background: 'linear-gradient(135deg, var(--accent-teal), #2dd4bf)', boxShadow: '0 10px 25px rgba(20, 184, 166, 0.4)' }} title="Add Savings">
             <PiggyBank size={24} />
          </button>
-         <button className="fab" onClick={() => setIsDeductOpen(true)} style={{ position: 'relative', bottom: 0, right: 0, background: 'linear-gradient(135deg, var(--danger), #f87171)', boxShadow: '0 10px 25px rgba(239, 68, 68, 0.4)' }} title="Add Expense">
+         <button className="fab" onClick={() => setIsDeductOpen(true)} style={{ background: 'linear-gradient(135deg, var(--danger), #f87171)', boxShadow: '0 10px 25px rgba(239, 68, 68, 0.4)' }} title="Add Expense">
             <MinusCircle size={24} />
          </button>
       </div>
