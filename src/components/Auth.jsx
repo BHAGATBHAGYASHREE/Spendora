@@ -37,10 +37,10 @@ export default function Auth({ setToken }) {
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', background: 'var(--bg-color)' }}>
       <div className="card animate-in" style={{ maxWidth: '400px', width: '100%', padding: '2.5rem' }}>
         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.0rem' }}>
-          <img src="/logo.png" alt="CashKalesh Logo" style={{ height: '70px', width: 'auto' }} />
+          <img src="/logo.png" alt="Spendora Logo" style={{ height: '70px', width: 'auto' }} />
         </div>
         <h2 style={{ textAlign: 'center', marginBottom: '0.5rem', fontSize: '1.8rem', color: 'var(--text-primary)' }}>
-          {isLogin ? 'Welcome to CashKalesh' : 'Join CashKalesh'}
+          {isLogin ? 'Welcome to Spendora' : 'Join Spendora'}
         </h2>
         <p style={{ textAlign: 'center', color: 'var(--text-secondary)', marginBottom: '2rem' }}>
           Track it. Flex it. Grow it.

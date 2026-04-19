@@ -69,7 +69,7 @@ export default function MonthlyReport() {
     doc.setFont("helvetica", "bold");
     doc.setFontSize(24);
     doc.setTextColor(79, 70, 229);
-    doc.text('CashKalesh', 20, 30);
+    doc.text('Spendora', 20, 30);
     
     doc.setFontSize(14);
     doc.setTextColor(0, 0, 0);
