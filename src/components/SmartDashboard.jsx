@@ -1,6 +1,6 @@
 import { useLocalStorage } from '../hooks/useLocalStorage';
-import { Wallet, Briefcase, TrendingUp, TrendingDown, Package, Activity } from 'lucide-react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, AreaChart, Area } from 'recharts';
+import { Wallet, Briefcase, TrendingUp, TrendingDown, Package, Activity, ArrowRight } from 'lucide-react';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, AreaChart, Area, PieChart, Pie, Cell } from 'recharts';
 
 export default function SmartDashboard() {
   const [personalTxs] = useLocalStorage('finance_personal', []);
@@ -82,13 +82,19 @@ export default function SmartDashboard() {
 
   const chartData = getMonthlyData();
 
+  const expenseData = [
+    { name: 'Personal Apps', value: personalExpensesThisMonth > 0 ? personalExpensesThisMonth : 1 },
+    { name: 'Business Ops', value: businessExpensesThisMonth > 0 ? businessExpensesThisMonth : 1 }
+  ];
+  const COLORS = ['var(--accent-purple)', 'var(--accent-teal)'];
+
   return (
     <div className="animate-in delay-1">
       <h2 style={{ marginBottom: '1.5rem', fontSize: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
         <Activity size={24} color="var(--primary-color)" /> Overview
       </h2>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem', marginBottom: '2.5rem' }}>
+      <div className="responsive-grid">
         {/* Personal Balance */}
         <div className="card" style={{ display: 'flex', alignItems: 'center', gap: '1rem', borderTop: '4px solid #3b82f6' }}>
           <div style={{ padding: '1rem', background: 'rgba(59, 130, 246, 0.1)', borderRadius: '50%', color: '#3b82f6' }}>
@@ -159,53 +165,72 @@ export default function SmartDashboard() {
       </div>
 
       {/* Charts Section */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '1.5rem', marginBottom: '2.5rem' }}>
+      <div className="responsive-charts">
         <div className="card delay-2 animate-in" style={{ padding: '1.5rem' }}>
-          <h3 style={{ marginBottom: '1.5rem', fontSize: '1.2rem', color: 'var(--text-primary)' }}>Income vs Expenses (6 Months)</h3>
+          <h3 style={{ marginBottom: '1.5rem', fontSize: '1.2rem', color: 'var(--text-primary)', fontWeight: 700 }}>Income Dynamics</h3>
           <div style={{ width: '100%', height: 300 }}>
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#64748b'}} />
-                <YAxis axisLine={false} tickLine={false} tick={{fill: '#64748b'}} tickFormatter={(value) => `₹${value}`} />
-                <Tooltip cursor={{fill: 'rgba(0,0,0,0.04)'}} contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} formatter={(value) => `₹${value.toLocaleString()}`} />
-                <Legend iconType="circle" />
-                <Bar dataKey="Income" fill="#10b981" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="Expense" fill="#ef4444" radius={[4, 4, 0, 0]} />
+                <defs>
+                  <linearGradient id="colorInc" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="var(--primary-color)" stopOpacity={0.9}/>
+                    <stop offset="95%" stopColor="var(--primary-color)" stopOpacity={0.2}/>
+                  </linearGradient>
+                  <linearGradient id="colorExp" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="var(--accent-pink)" stopOpacity={0.9}/>
+                    <stop offset="95%" stopColor="var(--accent-pink)" stopOpacity={0.2}/>
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border-color)" />
+                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: 'var(--text-secondary)'}} />
+                <YAxis axisLine={false} tickLine={false} tick={{fill: 'var(--text-secondary)'}} tickFormatter={(value) => `₹${value}`} />
+                <Tooltip cursor={{fill: 'rgba(0,0,0,0.02)'}} contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: 'var(--shadow-xl)', padding: '1rem' }} formatter={(value) => `₹${value.toLocaleString()}`} />
+                <Legend iconType="circle" wrapperStyle={{ paddingTop: '1rem' }} />
+                <Bar dataKey="Income" fill="url(#colorInc)" radius={[6, 6, 0, 0]} />
+                <Bar dataKey="Expense" fill="url(#colorExp)" radius={[6, 6, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
         </div>
 
         <div className="card delay-2 animate-in" style={{ padding: '1.5rem' }}>
-          <h3 style={{ marginBottom: '1.5rem', fontSize: '1.2rem', color: 'var(--text-primary)' }}>Net Profit Trend</h3>
-          <div style={{ width: '100%', height: 300 }}>
+          <h3 style={{ marginBottom: '1.5rem', fontSize: '1.2rem', color: 'var(--text-primary)', fontWeight: 700 }}>Expense Distribution</h3>
+          <div style={{ width: '100%', height: 300, position: 'relative' }}>
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-                <defs>
-                  <linearGradient id="colorProfit" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#4f46e5" stopOpacity={0.8}/>
-                    <stop offset="95%" stopColor="#4f46e5" stopOpacity={0}/>
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#64748b'}} />
-                <YAxis axisLine={false} tickLine={false} tick={{fill: '#64748b'}} tickFormatter={(value) => `₹${value}`} />
-                <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} formatter={(value) => `₹${value.toLocaleString()}`} />
-                <Area type="monotone" dataKey="Profit" stroke="#4f46e5" fillOpacity={1} fill="url(#colorProfit)" strokeWidth={3} />
-              </AreaChart>
+              <PieChart>
+                <Pie
+                  data={expenseData}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={80}
+                  outerRadius={110}
+                  paddingAngle={5}
+                  dataKey="value"
+                  stroke="none"
+                >
+                  {expenseData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: 'var(--shadow-xl)' }} formatter={(value) => `₹${value.toLocaleString()}`} />
+                <Legend iconType="circle" verticalAlign="bottom" />
+              </PieChart>
             </ResponsiveContainer>
+            <div style={{ position: 'absolute', top: '48%', left: '50%', transform: 'translate(-50%, -50%)', textAlign: 'center', pointerEvents: 'none' }}>
+              <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Total Spent</div>
+              <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-primary)' }}>₹{totalExpenses.toLocaleString('en-IN')}</div>
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="card delay-3 animate-in">
-        <h3 style={{ marginBottom: '1.5rem', fontSize: '1.2rem', color: 'var(--text-primary)' }}>Recent Transactions</h3>
+      <div className="card delay-3 animate-in" style={{ padding: '2rem' }}>
+        <h3 style={{ marginBottom: '2rem', fontSize: '1.25rem', color: 'var(--text-primary)', fontWeight: 700 }}>Recent Activity Timeline</h3>
         {topTransactions.length === 0 ? (
            <p style={{ color: 'var(--text-secondary)', textAlign: 'center', padding: '2rem 0' }}>No recent activity to display.</p>
         ) : (
-          <div className="transaction-list">
-            {topTransactions.map(tx => {
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', borderLeft: '2px solid var(--border-color)', paddingLeft: '1.5rem', marginLeft: '0.5rem' }}>
+            {topTransactions.map((tx, idx) => {
                const title = tx.type === 'order' ? `Order: ${tx.customerName}` :
                              tx.type === 'expense' ? `Expense: ${tx.itemName}` :
                              tx.type === 'save' ? `Savings: ${tx.title}` : tx.title;
@@ -214,18 +239,24 @@ export default function SmartDashboard() {
                const isNeutral = tx.type === 'save';
 
                return (
-                 <div key={tx.id} className="transaction-item" style={{ padding: '1rem' }}>
+                 <div key={tx.id} style={{ position: 'relative', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem', background: 'var(--bg-color)', borderRadius: 'var(--radius-md)', transition: 'all 0.2s', cursor: 'pointer' }} className="hover-3d">
+                    <div style={{ position: 'absolute', left: '-2rem', top: '50%', transform: 'translateY(-50%)', width: '14px', height: '14px', borderRadius: '50%', background: isPositive ? 'var(--success)' : isNeutral ? 'var(--primary-color)' : 'var(--danger)', border: '3px solid var(--surface-color)' }}></div>
                     <div className="transaction-info">
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <span className="title" style={{ fontSize: '1.05rem' }}>{title}</span>
-                        <span style={{ fontSize: '0.75rem', padding: '0.15rem 0.5rem', borderRadius: '1rem', background: tx.source === 'Personal' ? '#e0f2fe' : '#ede9fe', color: tx.source === 'Personal' ? '#0284c7' : '#7c3aed', fontWeight: 600 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                        <span className="title" style={{ fontSize: '1.05rem', fontWeight: 600 }}>{title}</span>
+                        <span style={{ fontSize: '0.7rem', padding: '0.2rem 0.6rem', borderRadius: '1rem', background: tx.source === 'Personal' ? 'var(--primary-light)' : '#ccfbf1', color: tx.source === 'Personal' ? 'var(--primary-hover)' : '#0f766e', fontWeight: 700, textTransform: 'uppercase' }}>
                           {tx.source}
                         </span>
                       </div>
-                      <span className="date">{new Date(tx.date).toLocaleDateString('en-IN', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })} {tx.note && `• ${tx.note}`}</span>
+                      <span className="date" style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginTop: '0.25rem', display: 'block' }}>
+                        {new Date(tx.date).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' })} {tx.note && `• ${tx.note}`}
+                      </span>
                     </div>
-                    <div className={`transaction-amount ${isPositive ? 'amount-positive' : isNeutral ? '' : 'amount-negative'}`} style={isNeutral ? { color: 'var(--primary-color)', fontWeight: '600'} : {}}>
-                      {isPositive ? '+' : '-'}₹{tx.amount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                      <div className={`transaction-amount ${isPositive ? 'amount-positive' : isNeutral ? '' : 'amount-negative'}`} style={{ fontWeight: 800, fontSize: '1.15rem' }}>
+                        {isPositive ? '+' : isNeutral ? '' : '-'}₹{tx.amount.toLocaleString('en-IN')}
+                      </div>
+                      <ArrowRight size={16} color="var(--text-secondary)" />
                     </div>
                  </div>
                );

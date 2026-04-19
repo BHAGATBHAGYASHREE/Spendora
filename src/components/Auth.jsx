@@ -12,7 +12,7 @@ export default function Auth({ setToken }) {
     setError(null);
     try {
       const endpoint = isLogin ? '/api/auth/login' : '/api/auth/register';
-      const apiUrl = `http://${window.location.hostname}:5005`;
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5005';
       const res = await fetch(`${apiUrl}${endpoint}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -26,7 +26,7 @@ export default function Auth({ setToken }) {
       setToken(data.token);
     } catch (err) {
       if (err.message.includes('Failed to fetch')) {
-         setError(`Cannot connect to backend server on ${window.location.hostname}:5005.`);
+         setError(`Cannot connect to backend server. Please ensure it is running.`);
       } else {
          setError(err.message);
       }
@@ -36,14 +36,14 @@ export default function Auth({ setToken }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', background: 'var(--bg-color)' }}>
       <div className="card animate-in" style={{ maxWidth: '400px', width: '100%', padding: '2.5rem' }}>
-        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.5rem', color: 'var(--primary-color)' }}>
-          <Activity size={48} />
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.0rem' }}>
+          <img src="/logo.png" alt="CashKalesh Logo" style={{ height: '70px', width: 'auto' }} />
         </div>
         <h2 style={{ textAlign: 'center', marginBottom: '0.5rem', fontSize: '1.8rem', color: 'var(--text-primary)' }}>
-          {isLogin ? 'Welcome Back' : 'Create Account'}
+          {isLogin ? 'Welcome to CashKalesh' : 'Join CashKalesh'}
         </h2>
         <p style={{ textAlign: 'center', color: 'var(--text-secondary)', marginBottom: '2rem' }}>
-          Secure Finance Dashboard Auth
+          Track it. Flex it. Grow it.
         </p>
 
         {error && (

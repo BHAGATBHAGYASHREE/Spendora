@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useLocalStorage } from '../hooks/useLocalStorage';
-import { FileText, Download, TrendingUp, TrendingDown, Package, PiggyBank } from 'lucide-react';
+import { FileText, Download, TrendingUp, TrendingDown, Package, PiggyBank, Calendar } from 'lucide-react';
+import { ComposedChart, Area, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import jsPDF from 'jspdf';
 
 export default function MonthlyReport() {
@@ -44,6 +45,21 @@ export default function MonthlyReport() {
   // 5. Net Profit
   const netProfit = totalIncome - totalExpenses;
 
+  // 6. Interactive Daily Chart Data
+  const daysInMonth = new Date(filterYear, filterMonth + 1, 0).getDate();
+  const dailyData = Array.from({length: daysInMonth}, (_, i) => {
+    const day = String(i+1).padStart(2, '0');
+    const dateStr = `${filterYear}-${String(filterMonth+1).padStart(2, '0')}-${day}`;
+    
+    const incP = personalThisMonth.filter(t => t.date === dateStr && t.type === 'add').reduce((a,b)=>a+b.amount,0);
+    const incB = businessThisMonth.filter(t => t.date === dateStr && t.type === 'order').reduce((a,b)=>a+b.amount,0);
+    
+    const expP = personalThisMonth.filter(t => t.date === dateStr && t.type === 'deduct').reduce((a,b)=>a+b.amount,0);
+    const expB = businessThisMonth.filter(t => t.date === dateStr && t.type === 'expense').reduce((a,b)=>a+b.amount,0);
+    
+    return { name: day, Income: incP + incB, Expense: expP + expB, Net: (incP + incB) - (expP + expB) };
+  });
+
   const monthName = new Date(filterYear, filterMonth, 1).toLocaleString('default', { month: 'long', year: 'numeric' });
 
   const downloadReportPDF = () => {
@@ -53,7 +69,7 @@ export default function MonthlyReport() {
     doc.setFont("helvetica", "bold");
     doc.setFontSize(24);
     doc.setTextColor(79, 70, 229);
-    doc.text('FinDashboard', 20, 30);
+    doc.text('CashKalesh', 20, 30);
     
     doc.setFontSize(14);
     doc.setTextColor(0, 0, 0);
@@ -142,7 +158,7 @@ export default function MonthlyReport() {
           Financial Summary for <span style={{ color: 'var(--text-primary)' }}>{monthName}</span>
         </h3>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>
+        <div className="responsive-grid">
           {/* Income */}
           <div style={{ padding: '1.5rem', background: 'rgba(16, 185, 129, 0.05)', borderRadius: 'var(--radius-md)', border: '1px solid rgba(16, 185, 129, 0.2)' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--success)', marginBottom: '0.5rem' }}>
@@ -210,6 +226,33 @@ export default function MonthlyReport() {
            </div>
            <div style={{ fontSize: '3rem', fontWeight: 800, color: netProfit >= 0 ? 'var(--success)' : 'var(--danger)', letterSpacing: '-1px' }}>
              ₹{netProfit.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+           </div>
+        </div>
+        
+        {/* Interactive Chart */}
+        <div style={{ marginTop: '2.5rem', padding: '1.5rem', background: 'var(--bg-color)', borderRadius: 'var(--radius-xl)', border: '1px solid var(--border-color)' }}>
+           <h3 style={{ fontSize: '1.1rem', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+             <Calendar size={20} color="var(--primary-color)" /> Daily Cash Flow Breakdown
+           </h3>
+           <div style={{ width: '100%', height: 350 }}>
+             <ResponsiveContainer width="100%" height="100%">
+               <ComposedChart data={dailyData} margin={{ top: 10, right: 10, left: 0, bottom: 5 }}>
+                 <defs>
+                    <linearGradient id="netGradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="var(--primary-hover)" stopOpacity={0.3}/>
+                      <stop offset="95%" stopColor="var(--primary-hover)" stopOpacity={0}/>
+                    </linearGradient>
+                 </defs>
+                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.05)" />
+                 <XAxis dataKey="name" tickLine={false} axisLine={false} tick={{fill: 'var(--text-secondary)', fontSize: 12}} />
+                 <YAxis tickFormatter={(val) => `₹${val}`} tickLine={false} axisLine={false} tick={{fill: 'var(--text-secondary)', fontSize: 12}} width={70} />
+                 <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: 'var(--shadow-xl)', fontWeight: 600 }} formatter={(v) => `₹${v.toLocaleString()}`} labelFormatter={(label) => `Day ${label}`} />
+                 <Legend iconType="circle" wrapperStyle={{ paddingTop: '20px' }} />
+                 <Bar dataKey="Income" fill="var(--success)" radius={[4, 4, 0, 0]} maxBarSize={20} />
+                 <Bar dataKey="Expense" fill="var(--danger)" radius={[4, 4, 0, 0]} maxBarSize={20} />
+                 <Area type="monotone" dataKey="Net" fill="url(#netGradient)" stroke="var(--primary-hover)" strokeWidth={3} />
+               </ComposedChart>
+             </ResponsiveContainer>
            </div>
         </div>
       </div>

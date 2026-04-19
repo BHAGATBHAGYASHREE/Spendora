@@ -3,97 +3,85 @@ import { useLocalStorage } from './hooks/useLocalStorage';
 import PersonalTracker from './components/PersonalTracker';
 import BusinessTracker from './components/BusinessTracker';
 import SmartDashboard from './components/SmartDashboard';
-import CustomerDatabase from './components/CustomerDatabase';
 import MonthlyReport from './components/MonthlyReport';
+import Profile from './components/Profile';
 import Auth from './components/Auth';
-import { LayoutDashboard, User, Briefcase, Users, FileText, Sun, Moon, LogOut } from 'lucide-react';
+import { Activity, Fingerprint, Wallet, Rocket, PieChart, LogOut, ChevronLeft, ChevronRight } from 'lucide-react';
 import './index.css';
 
 function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
-  const [theme, setTheme] = useLocalStorage('theme', 'light');
+  const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
   const [authToken, setAuthToken] = useLocalStorage('session_token', null);
-
-  useEffect(() => {
-    if (theme === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [theme]);
 
   if (!authToken) {
     return <Auth setToken={setAuthToken} />;
   }
 
   return (
-    <div className="layout-container">
-      <header className="header animate-in">
-        <h1 className="header-title">FinDashboard</h1>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
-          <button 
-            onClick={() => setAuthToken(null)} 
-            className="btn-outline" 
-            style={{ padding: '0.5rem', borderRadius: '50%', display: 'flex', color: 'var(--danger)', borderColor: 'var(--danger)' }}
-            title="Secure Logout"
-          >
-            <LogOut size={18} />
-          </button>
-          <button 
-            onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')} 
-            className="btn-outline" 
-            style={{ padding: '0.5rem', borderRadius: '50%', display: 'flex' }}
-            title="Toggle Theme"
-          >
-            {theme === 'light' ? <Moon size={18} /> : <Sun size={18} />}
-          </button>
+    <div className="app-wrapper" style={{ position: 'relative' }}>
+      {/* Drifting Background Blobs for Visual Interest */}
+      <div className="blob" style={{ background: '#a855f7', top: '10%', left: '15%' }}></div>
+      <div className="blob" style={{ background: '#34d399', bottom: '20%', right: '10%', animationDelay: '2s' }}></div>
+      <div className="blob" style={{ background: '#3b82f6', top: '50%', left: '50%', animationDelay: '4s' }}></div>
+
+      {/* Mobile Top Navigation */}
+      <div className="mobile-top-nav">
+        <img src="/logo.png" alt="Spendora Logo" />
+        <button className="mobile-profile-btn" onClick={() => setActiveTab('profile')}>
+          <Fingerprint size={24} color="var(--primary-color)" />
+        </button>
+      </div>
+
+      {/* GenZ Sidebar */}
+      <aside className={`sidebar animate-in ${!isSidebarExpanded ? 'collapsed' : ''}`}>
+        <div className="sidebar-logo" style={{ display: 'flex', alignItems: 'center', justifyContent: isSidebarExpanded ? 'space-between' : 'center', width: '100%', marginBottom: '2rem' }}>
+          {isSidebarExpanded && (
+             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+               <img src="/logo.png" alt="Spendora Logo" style={{ height: '60px', width: 'auto' }} />
+             </div>
+          )}
+          {!isSidebarExpanded && <img src="/logo.png" alt="Logo" style={{ height: '60px', width: 'auto' }} />}
           
-          <div className="tabs">
-          <button 
-            className={`tab ${activeTab === 'dashboard' ? 'active' : ''}`}
-            onClick={() => setActiveTab('dashboard')}
-            style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
-          >
-            <LayoutDashboard size={16} /> Overview
-          </button>
-          <button 
-            className={`tab ${activeTab === 'personal' ? 'active' : ''}`}
-            onClick={() => setActiveTab('personal')}
-            style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
-          >
-            <User size={16} /> Personal
-          </button>
-          <button 
-            className={`tab ${activeTab === 'business' ? 'active' : ''}`}
-            onClick={() => setActiveTab('business')}
-            style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
-          >
-            <Briefcase size={16} /> Business
-          </button>
-          <button 
-            className={`tab ${activeTab === 'customers' ? 'active' : ''}`}
-            onClick={() => setActiveTab('customers')}
-            style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
-          >
-            <Users size={16} /> Customers
-          </button>
-          <button 
-            className={`tab ${activeTab === 'reports' ? 'active' : ''}`}
-            onClick={() => setActiveTab('reports')}
-            style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
-          >
-            <FileText size={16} /> Reports
+          <button onClick={() => setIsSidebarExpanded(!isSidebarExpanded)} className="btn-outline" style={{ padding: '0.25rem', border: 'none', display: window.innerWidth > 900 ? 'block' : 'none' }}>
+            {isSidebarExpanded ? <ChevronLeft size={18} /> : <ChevronRight size={18} />}
           </button>
         </div>
+
+        <nav className="sidebar-nav">
+          <button className={`nav-item hover-3d ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={() => setActiveTab('dashboard')}>
+            <Activity size={20} /> <span className="nav-text">Overview</span>
+          </button>
+          <button className={`nav-item hover-3d mobile-hide ${activeTab === 'profile' ? 'active' : ''}`} onClick={() => setActiveTab('profile')}>
+            <Fingerprint size={20} /> <span className="nav-text">Profile</span>
+          </button>
+          <button className={`nav-item hover-3d ${activeTab === 'personal' ? 'active' : ''}`} onClick={() => setActiveTab('personal')}>
+            <Wallet size={20} /> <span className="nav-text">Personal</span>
+          </button>
+          <button className={`nav-item hover-3d ${activeTab === 'business' ? 'active' : ''}`} onClick={() => setActiveTab('business')}>
+            <Rocket size={20} /> <span className="nav-text">Business</span>
+          </button>
+          <button className={`nav-item hover-3d ${activeTab === 'reports' ? 'active' : ''}`} onClick={() => setActiveTab('reports')}>
+            <PieChart size={20} /> <span className="nav-text">Reports</span>
+          </button>
+        </nav>
+
+        <div className="sidebar-footer">
+          <button className="nav-item text-danger" onClick={() => setAuthToken(null)} style={{ borderTop: '1px solid var(--border-color)', borderRadius: '0', paddingTop: '1.5rem', justifyContent: isSidebarExpanded ? 'flex-start' : 'center' }}>
+            <LogOut size={20} /> {isSidebarExpanded && <span className="nav-text">Terminate Session</span>}
+          </button>
         </div>
-      </header>
-      
-      <main className="main-content">
+      </aside>
+
+      {/* Main Glassmorphism Pane */}
+      <main className="main-pane animate-in delay-1">
+        <div className="pane-content">
         {activeTab === 'dashboard' && <SmartDashboard />}
         {activeTab === 'personal' && <PersonalTracker />}
         {activeTab === 'business' && <BusinessTracker />}
-        {activeTab === 'customers' && <CustomerDatabase />}
         {activeTab === 'reports' && <MonthlyReport />}
+        {activeTab === 'profile' && <Profile setAuthToken={setAuthToken} />}
+        </div>
       </main>
     </div>
   );
