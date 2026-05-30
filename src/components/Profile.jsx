@@ -1,10 +1,9 @@
 import { User, Mail, Shield, LogOut, Award } from 'lucide-react';
-import { useLocalStorage } from '../hooks/useLocalStorage';
+import { useData } from '../context/DataContext';
 import { useState } from 'react';
 
-export default function Profile({ setAuthToken }) {
-  const [personalTxs] = useLocalStorage('finance_personal', []);
-  const [businessTxs] = useLocalStorage('finance_business', []);
+export default function Profile({ handleLogout }) {
+  const { personalTransactions: personalTxs, businessTransactions: businessTxs } = useData();
   const [name, setName] = useState('Spendora Admin');
   const [newPassword, setNewPassword] = useState('');
   
@@ -69,7 +68,7 @@ export default function Profile({ setAuthToken }) {
         </div>
 
         <button 
-          onClick={() => setAuthToken(null)}
+          onClick={handleLogout}
           className="btn-danger hover-3d"
           style={{ padding: '1rem 3rem', fontSize: '1.1rem', borderRadius: '50px', letterSpacing: '1px', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '0.75rem', margin: '0 auto', boxShadow: '0 10px 15px -3px rgba(239, 68, 68, 0.4)' }}
         >

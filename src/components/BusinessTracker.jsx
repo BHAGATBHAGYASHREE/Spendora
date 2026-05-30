@@ -1,15 +1,14 @@
 import { useState } from 'react';
 import { PackageSearch, Download, ShoppingCart, ShoppingBag, Trash2, PlusCircle, TrendingUp, Users, Search, Edit2, ChevronDown, ChevronUp, Package } from 'lucide-react';
 import { AreaChart, Area, ResponsiveContainer, Tooltip } from 'recharts';
-import { useLocalStorage } from '../hooks/useLocalStorage';
+import { useData } from '../context/DataContext';
 import Modal from './Modal';
 import jsPDF from 'jspdf';
 
 export default function BusinessTracker() {
   const [activeTab, setActiveTab] = useState('transactions'); // 'transactions' | 'customers'
 
-  const [transactions, setTransactions] = useLocalStorage('finance_business', []);
-  const [customers, setCustomers] = useLocalStorage('finance_customers', []);
+  const { businessTransactions: transactions, setBusinessTransactions: setTransactions, customers, setCustomers } = useData();
   
   // Modal states - Transactions
   const [isOrderOpen, setIsOrderOpen] = useState(false);

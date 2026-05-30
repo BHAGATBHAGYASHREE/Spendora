@@ -1,10 +1,9 @@
-import { useLocalStorage } from '../hooks/useLocalStorage';
+import { useData } from '../context/DataContext';
 import { Wallet, Briefcase, TrendingUp, TrendingDown, Package, Activity, ArrowRight } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, AreaChart, Area, PieChart, Pie, Cell } from 'recharts';
 
 export default function SmartDashboard() {
-  const [personalTxs] = useLocalStorage('finance_personal', []);
-  const [businessTxs] = useLocalStorage('finance_business', []);
+  const { personalTransactions: personalTxs, businessTransactions: businessTxs } = useData();
 
   // 1. Total Personal Balance
   const personalBalance = personalTxs.reduce((acc, t) => {

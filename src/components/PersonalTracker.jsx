@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { PlusCircle, MinusCircle, Trash2, PiggyBank, Target, Award } from 'lucide-react';
-import { useLocalStorage } from '../hooks/useLocalStorage';
+import { useData } from '../context/DataContext';
 import Modal from './Modal';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 export default function PersonalTracker() {
-  const [transactions, setTransactions] = useLocalStorage('finance_personal', []);
+  const { personalTransactions: transactions, setPersonalTransactions: setTransactions } = useData();
   
   // Modal states
   const [isAddOpen, setIsAddOpen] = useState(false);

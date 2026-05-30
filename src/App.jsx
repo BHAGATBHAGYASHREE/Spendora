@@ -7,6 +7,7 @@ import MonthlyReport from './components/MonthlyReport';
 import Profile from './components/Profile';
 import Auth from './components/Auth';
 import { Activity, Fingerprint, Wallet, Rocket, PieChart, LogOut, ChevronLeft, ChevronRight } from 'lucide-react';
+import { DataProvider } from './context/DataContext';
 import './index.css';
 
 function App() {
@@ -14,12 +15,21 @@ function App() {
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
   const [authToken, setAuthToken] = useLocalStorage('session_token', null);
 
+  const handleLogout = () => {
+    localStorage.removeItem('session_token');
+    localStorage.removeItem('finance_personal');
+    localStorage.removeItem('finance_business');
+    localStorage.removeItem('finance_customers');
+    setAuthToken(null);
+  };
+
   if (!authToken) {
     return <Auth setToken={setAuthToken} />;
   }
 
   return (
-    <div className="app-wrapper" style={{ position: 'relative' }}>
+    <DataProvider token={authToken}>
+      <div className="app-wrapper" style={{ position: 'relative' }}>
       {/* Drifting Background Blobs for Visual Interest */}
       <div className="blob" style={{ background: '#a855f7', top: '10%', left: '15%' }}></div>
       <div className="blob" style={{ background: '#34d399', bottom: '20%', right: '10%', animationDelay: '2s' }}></div>
@@ -67,7 +77,7 @@ function App() {
         </nav>
 
         <div className="sidebar-footer">
-          <button className="nav-item text-danger" onClick={() => setAuthToken(null)} style={{ borderTop: '1px solid var(--border-color)', borderRadius: '0', paddingTop: '1.5rem', justifyContent: isSidebarExpanded ? 'flex-start' : 'center' }}>
+          <button className="nav-item text-danger" onClick={handleLogout} style={{ borderTop: '1px solid var(--border-color)', borderRadius: '0', paddingTop: '1.5rem', justifyContent: isSidebarExpanded ? 'flex-start' : 'center' }}>
             <LogOut size={20} /> {isSidebarExpanded && <span className="nav-text">Terminate Session</span>}
           </button>
         </div>
@@ -80,10 +90,11 @@ function App() {
         {activeTab === 'personal' && <PersonalTracker />}
         {activeTab === 'business' && <BusinessTracker />}
         {activeTab === 'reports' && <MonthlyReport />}
-        {activeTab === 'profile' && <Profile setAuthToken={setAuthToken} />}
+        {activeTab === 'profile' && <Profile handleLogout={handleLogout} />}
         </div>
       </main>
     </div>
+    </DataProvider>
   );
 }
 

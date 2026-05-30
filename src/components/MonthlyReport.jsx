@@ -1,12 +1,11 @@
 import { useState } from 'react';
-import { useLocalStorage } from '../hooks/useLocalStorage';
+import { useData } from '../context/DataContext';
 import { FileText, Download, TrendingUp, TrendingDown, Package, PiggyBank, Calendar } from 'lucide-react';
 import { ComposedChart, Area, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import jsPDF from 'jspdf';
 
 export default function MonthlyReport() {
-  const [personalTxs] = useLocalStorage('finance_personal', []);
-  const [businessTxs] = useLocalStorage('finance_business', []);
+  const { personalTransactions: personalTxs, businessTransactions: businessTxs } = useData();
   
   // Default to current month YYYY-MM
   const currentYearMonth = `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}`;
